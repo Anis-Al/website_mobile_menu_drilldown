@@ -1,0 +1,330 @@
+// Mobile menu drilldown look, all levels.
+// Scoped to the mobile offcanvas only (#top_menu_collapse_mobile), so the
+// desktop navbar and the sidebar/hamburger headers keep their own design.
+//
+// ponytail: no JS for the menu levels. Odoo 19 already drills mega menus down
+// to a full-screen panel (.o_mega_menu_is_offcanvas), and sub menus are
+// Bootstrap accordions: the expanded header is pinned as the back bar and its
+// collapse as the panel, so "back" is just collapsing it again. Only the mega
+// menu snippet content needs JS (mega_menu_drilldown.js), because it is an
+// HTML field with no toggle markup to hook onto.
+//
+// Panels are `position: absolute`, never `fixed`: .offcanvas and .o_mega_menu
+// are both positioned, so a panel inherits the exact drawer box instead of
+// the viewport. No width to guess, no device-width assumption.
+
+#top_menu_collapse_mobile {
+    // Tuning knobs.
+    --mm-fg: #16284b;           // row label color
+    --mm-bg: #f6f4f1;           // panel background
+    --mm-sep: #{rgba(#16284b, .13)};
+    --mm-pad-x: 1.75rem;        // side inset of rows AND separators
+    --mm-pad-y: 1.35rem;        // row height
+    --mm-size: 1.0625rem;       // row label size
+    --mm-bar-h: 3.5rem;         // back bar height
+    --mm-top: 3.25rem;          // .offcanvas-header height: drilled levels
+                                // start below it, clear of the close button
+    // Offset of the current containing block. Reset to 0 inside a panel,
+    // because a nested level is already positioned within that panel.
+    --mm-off: var(--mm-top);
+    --mm-card-bg: #fff;         // leaf rows inside a panel
+    --mm-card-radius: .5rem;
+    --mm-card-gap: .75rem;
+    --mm-z-panel: 1044;         // stays under .btn-close (1046)
+    --mm-z-bar: 1045;
+
+    background-color: var(--mm-bg);
+
+    .offcanvas-header {
+        padding: 1.25rem var(--mm-pad-x) .5rem;
+
+        .btn-close {
+            --bs-btn-close-color: var(--mm-fg);
+            --bs-btn-close-opacity: .85;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+
+    .offcanvas-body {
+        padding-inline: var(--mm-pad-x);
+    }
+
+    .top_menu.o_mega_menu_is_offcanvas {
+        // Cancel the .mx-n3 full-bleed so separators stay inset like the rows.
+        margin-inline: 0 !important;
+
+        > .nav-item {
+            --bs-border-color: var(--mm-sep);
+        }
+
+        // ---- Rows (every level) ------------------------------------------
+        .nav-link:not(.btn) {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .75rem;
+            padding: var(--mm-pad-y) 0 !important; // beats .p-3 / .px-4
+            font-size: var(--mm-size);
+            font-weight: 700;
+            color: var(--mm-fg);
+            background-color: transparent;
+            box-shadow: none;
+
+            &::after {
+                flex: 0 0 auto;
+                width: auto;
+                height: auto;
+                margin: 0;
+                border: 0;
+                background: none;
+                font-family: "odoo_ui_icons";
+                font-size: .95em;
+                font-weight: 400;
+                opacity: .6;
+            }
+        }
+
+        // Sub level rows: own separator (the parent <li> has none) + lighter.
+        .list-group-item {
+            border: 0 !important;
+            border-bottom: 1px solid var(--mm-sep) !important;
+            font-weight: 500;
+        }
+
+        // ---- Chevrons ----------------------------------------------------
+        .dropdown-toggle::after,
+        .accordion-button.collapsed::after {
+            content: "\e83b"; // oi-chevron-right
+        }
+        .nav-link:not(.dropdown-toggle):not(.accordion-button)::after {
+            content: none;
+        }
+
+        // ---- Sub menu drilldown ------------------------------------------
+        // Expanded header becomes the back bar, pinned to the drawer.
+        .accordion-button:not(.collapsed) {
+            position: absolute;
+            // Inset instead of padded, so the rule under the title lines up
+            // with the cards below it.
+            inset: var(--mm-off) var(--mm-pad-x) auto var(--mm-pad-x);
+            z-index: var(--mm-z-bar);
+            justify-content: flex-start;
+            height: var(--mm-bar-h);
+            padding: 0 !important;
+            border-bottom: 2px solid var(--mm-fg);
+            background-color: var(--mm-bg);
+
+            &::after {
+                content: "\e83a"; // oi-chevron-left
+                order: -1;
+                margin-right: .75rem !important;
+            }
+        }
+
+        // Its content becomes the panel underneath.
+        .accordion-collapse.show,
+        .accordion-collapse.collapsing {
+            position: absolute;
+            inset: calc(var(--mm-off) + var(--mm-bar-h)) 0 0 0;
+            z-index: var(--mm-z-panel);
+
+            // Deeper levels are positioned inside this panel already.
+            > * {
+                --mm-off: 0px;
+            }
+            height: auto !important; // kill the collapse height animation
+            padding-inline: var(--mm-pad-x);
+            overflow-y: auto;
+            background-color: var(--mm-bg);
+            transition: none;
+        }
+
+        // Drilled deeper: hide the parent bar and pull its panel up, so the
+        // child bar lands at the top of the drawer instead of below a gap.
+        .accordion-item:has(.accordion-collapse.show .accordion-collapse.show) {
+            > .accordion-button:not(.collapsed) {
+                display: none;
+            }
+            > .accordion-collapse.show {
+                top: var(--mm-off);
+                overflow: hidden; // its scroll would drag the child panel
+            }
+        }
+
+        // ---- Leaf rows inside a panel ------------------------------------
+        // A row that drills further stays a plain separated row; a row that
+        // just navigates becomes a card.
+        .accordion-collapse.show {
+            padding-block: 1rem 1.5rem;
+        }
+
+        .o_mm_open > :is(nav, ul, ol, .list-group) > .nav-link,
+        .accordion-collapse.show .list-group-item:not(.accordion-button) {
+            margin-bottom: var(--mm-card-gap);
+            padding: 1.05rem 1.25rem !important;
+            border: 0 !important;
+            border-radius: var(--mm-card-radius);
+            background-color: var(--mm-card-bg);
+            font-weight: 700;
+
+            &::after {
+                // Beats the "a leaf link has no chevron" rule above, which is
+                // more specific (it carries the .top_menu classes).
+                content: "\e83b" !important; // oi-chevron-right
+                opacity: .8;
+            }
+        }
+    }
+
+    // Mega menu back bar (rendered by Odoo, .o_mega_nav).
+    .o_mega_nav {
+        height: var(--mm-bar-h);
+        padding-left: calc(var(--mm-pad-x) - .5rem);
+        background-color: var(--mm-bg);
+
+        .btn {
+            color: var(--mm-fg);
+            font-size: 1.25rem;
+        }
+    }
+
+    div.o_mega_menu {
+        margin-top: var(--mm-bar-h) !important;
+        height: calc(100dvh - var(--mm-bar-h));
+    }
+
+    // ---- Drilldown inside the mega menu snippet content -------------------
+    // The snippet is an HTML field, so the columns are turned into rows here
+    // and mega_menu_drilldown.js only flags the open one with .o_mm_open.
+    .o_mega_menu {
+        // This transform would become the containing block of the panels.
+        // Dropping it only costs Odoo's slide-in of the mega panel.
+        > section {
+            transform: none !important;
+        }
+
+        .container,
+        .container-fluid {
+            padding-inline: var(--mm-pad-x) !important;
+        }
+
+        .row {
+            --bs-gutter-x: 0;
+        }
+
+        // Drillable block = a grid column, or a .o_mm_sub (third level, see
+        // views/s_mega_menu_multi_menus.xml). Matching "col-" and not "col"
+        // on purpose: "o_colored_level" contains "col" and sits on <section>.
+        [class*="col-"],
+        > section .col,
+        .o_mm_sub {
+            padding: 0 !important;
+            text-align: left !important;
+            border-bottom: 1px solid var(--mm-sep);
+
+            > :is(h1, h2, h3, h4, h5, h6) {
+                margin: 0;
+
+                > .nav-link {
+                    padding: var(--mm-pad-y) 0 !important;
+                    color: var(--mm-fg) !important; // beats .text-black
+
+                    &::after {
+                        // !important for the same reason as the cards: the
+                        // "a leaf link has no chevron" rule above carries the
+                        // .top_menu classes and is more specific.
+                        content: "\e83b" !important; // oi-chevron-right
+                    }
+                }
+            }
+
+            // Sub level, shown only once the block is open.
+            > :is(nav, ul, ol, .list-group) {
+                display: none;
+            }
+        }
+
+    }
+
+    // While drilled in, the open branch owns the whole drawer. Everything
+    // else is hidden, so each level just flows in the mega panel: no stack of
+    // positioned layers, where every panel is the next one's containing block
+    // and one broken link in the chain leaves a level inline and half-height.
+    .o_mega_menu:has(.o_mm_open) {
+        margin-top: 0 !important;
+        height: 100dvh;
+
+        ~ .o_mega_nav {
+            display: none;
+        }
+
+        // Room above the back bar for the offcanvas close button.
+        > section {
+            padding-block: var(--mm-top) 0 !important;
+        }
+
+        .container,
+        .container-fluid,
+        .row {
+            padding-block: 0 !important;
+        }
+
+        // Siblings of an open block step aside, at every level: the other
+        // columns at level 1, the other blocks and leaf rows deeper down.
+        // Sibling-scoped on purpose, so the open block's own children (the
+        // rows you are meant to see) stay.
+        .o_mm_open ~ *,
+        *:has(~ .o_mm_open) {
+            display: none;
+        }
+
+        // Levels above the current one: keep the branch, drop its chrome.
+        // Only the deepest heading stays, as the back bar.
+        :is([class*="col-"], .col, .o_mm_sub):has(.o_mm_open) {
+            border-bottom: 0;
+
+            > :is(h1, h2, h3, h4, h5, h6) {
+                display: none;
+            }
+        }
+
+        .o_mm_open {
+            border-bottom: 0;
+
+            // Sticky, not absolute: .o_mega_menu is the scroll container, and
+            // an absolute child of it scrolls away with the list.
+            > :is(h1, h2, h3, h4, h5, h6) {
+                position: sticky;
+                top: var(--mm-top);
+                z-index: 2;
+                height: var(--mm-bar-h);
+                border-bottom: 2px solid var(--mm-fg);
+                background-color: var(--mm-bg);
+
+                > .nav-link {
+                    justify-content: flex-start;
+                    height: 100%;
+                    padding-block: 0 !important;
+
+                    &::after {
+                        content: "\e83a" !important; // oi-chevron-left
+                        order: -1;
+                        margin-right: .75rem;
+                    }
+                }
+            }
+
+            > :is(nav, ul, ol, .list-group) {
+                display: block;
+                padding-block: 1rem 1.5rem;
+            }
+        }
+
+        // Deepest level (its rows are leaves, no block to drill into): a back
+        // control is already on screen, so the title drops its arrow.
+        .o_mm_open:not(:has(.o_mm_sub)) > :is(h1, h2, h3, h4, h5, h6) > .nav-link::after {
+            content: none !important;
+        }
+    }
+}

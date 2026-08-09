@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Render a third category level, so the mobile drilldown has something
+         to drill into. A sub category with published children becomes a
+         .o_mm_sub block (heading + nav), the same shape as a column, which is
+         what mobile_menu.scss and mega_menu_drilldown.js already handle. -->
+    <template id="s_mega_menu_multi_menus" inherit_id="website_sale.s_mega_menu_multi_menus">
+        <xpath expr="//nav" position="replace">
+            <nav class="nav flex-column">
+                <t t-foreach="category.child_id.filtered('has_published_products')" t-as="sub_category">
+                    <t t-set="sub_children" t-value="sub_category.child_id.filtered('has_published_products')"/>
+                    <div t-if="sub_children" class="o_mm_sub">
+                        <h5>
+                            <a
+                                t-att-href="'/shop/category/%s' % sub_category.id"
+                                class="nav-link"
+                                t-esc="sub_category.name"
+                            />
+                        </h5>
+                        <nav class="nav flex-column">
+                            <t t-foreach="sub_children" t-as="sub_sub_category">
+                                <a
+                                    t-att-href="'/shop/category/%s' % sub_sub_category.id"
+                                    class="nav-link"
+                                    t-esc="sub_sub_category.name"
+                                />
+                            </t>
+                        </nav>
+                    </div>
+                    <a
+                        t-else=""
+                        t-att-href="'/shop/category/%s' % sub_category.id"
+                        class="nav-link"
+                        t-esc="sub_category.name"
+                    />
+                </t>
+            </nav>
+        </xpath>
+    </template>
+
+</odoo>
