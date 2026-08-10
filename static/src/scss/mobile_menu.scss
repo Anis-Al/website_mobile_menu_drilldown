@@ -328,3 +328,68 @@
         }
     }
 }
+
+// ---- Desktop mega menu ----------------------------------------------------
+// Rule under each parent category title. Breakpoint-scoped instead of
+// :not(#top_menu_collapse_mobile ...): the drawer only exists below lg, and
+// Odoo moves the same mega menu node between the two navbars, so an ancestor
+// selector would have to guess which one currently holds it.
+// h4 is the parent category (website_sale.s_mega_menu_multi_menus); the sub
+// categories views/s_mega_menu_multi_menus.xml adds are h5 and stay bare.
+@include media-breakpoint-up(lg) {
+    .s_mega_menu_multi_menus {
+        // Tuning knobs.
+        --mmd-title: #1f3557;       // parent category label + hover
+        --mmd-item: #3f4145;        // sub category label
+        --mmd-line: #bd945d;        // rule under a parent category
+        --mmd-bg: #fff;             // menu panel
+        --mmd-hover-bg: #f2f3f5;
+
+        // Beats the o_cc/o_cc1 color combination the snippet carries.
+        background-color: var(--mmd-bg) !important;
+
+        // The snippet centers its columns (.text-center on each col). Two
+        // classes beat Bootstrap's one, so this wins its !important.
+        .text-center {
+            text-align: left !important;
+        }
+
+        h4 {
+            margin-bottom: .5rem;
+            padding-bottom: .5rem;
+            border-bottom: 2px solid var(--mmd-line);
+
+            // .nav-link, not the h4: the snippet hardcodes .text-black on the
+            // link and Bootstrap sets its own color there too.
+            > .nav-link {
+                color: var(--mmd-title) !important;
+                font-size: 16px;
+                font-weight: 700;
+            }
+        }
+
+        // Sub categories, including the h5 of a .o_mm_sub block (both sit
+        // inside the column's <nav>).
+        nav .nav-link {
+            padding: .25rem .5rem;
+            border-radius: .25rem;
+            color: var(--mmd-item);
+            font-size: 14px;
+            font-weight: 400;
+
+            &:hover,
+            &:focus {
+                background-color: var(--mmd-hover-bg);
+                color: var(--mmd-title);
+                font-weight: 500;
+            }
+        }
+    }
+}
+
+// Site background. ponytail: one line here, but it belongs in Website >
+// Configuration > Settings > Theme, which sets it globally instead of having
+// a menu module reach outside itself. Delete when the theme carries it.
+body {
+    background-color: #fafafa;
+}
