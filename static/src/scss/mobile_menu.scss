@@ -194,6 +194,27 @@
         height: calc(100dvh - var(--mm-bar-h));
     }
 
+    // One background for the whole drawer. The snippet paints its own
+    // (o_cc/o_cc1 on <section>, theme classes on the wrappers), which left the
+    // mega panel a different color from the rest of the offcanvas.
+    //
+    // The panel is repainted, not made transparent: it overlays the website
+    // menu list, so a see-through panel renders both lists on top of each
+    // other. Only the wrappers inside it drop their color. Not `*`: the leaf
+    // rows below are cards and keep --mm-card-bg.
+    .o_mega_menu {
+        background-color: var(--mm-bg) !important;
+    }
+
+    .o_mega_menu > section,
+    .o_mega_menu .container,
+    .o_mega_menu .container-fluid,
+    .o_mega_menu .row,
+    .o_mega_menu [class*="col-"],
+    .o_mega_menu .o_mm_sub {
+        background: transparent !important;
+    }
+
     // ---- Drilldown inside the mega menu snippet content -------------------
     // The snippet is an HTML field, so the columns are turned into rows here
     // and mega_menu_drilldown.js only flags the open one with .o_mm_open.
