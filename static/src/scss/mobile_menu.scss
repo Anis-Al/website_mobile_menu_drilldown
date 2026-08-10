@@ -206,6 +206,12 @@
         background-color: var(--mm-bg) !important;
     }
 
+    // Desktop-only column footer: here the category title is the back bar and
+    // already links to the same page.
+    .o_mm_all {
+        display: none !important;
+    }
+
     .o_mega_menu > section,
     .o_mega_menu .container,
     .o_mega_menu .container-fluid,
@@ -403,6 +409,21 @@
                 background-color: var(--mmd-hover-bg);
                 color: var(--mmd-title);
                 font-weight: 500;
+            }
+        }
+
+        // Column footer: a sub category row, set apart by space alone.
+        // Icon in CSS, not in the view: the view is snapshotted into
+        // mega_menu_content, so changing it means re-applying the snippet.
+        .o_mm_all {
+            margin-top: 1.5rem;
+
+            &::after {
+                content: "\e83b"; // oi-chevron-right
+                margin-left: .35rem;
+                font-family: "odoo_ui_icons";
+                font-size: .9em;
+                vertical-align: middle;
             }
         }
     }

@@ -35,6 +35,13 @@
                         t-esc="sub_category.name"
                     />
                 </t>
+                <!-- Footer of the column. Same destination as the title above
+                     it, which the mobile drilldown already offers as its back
+                     bar, so mobile_menu.scss hides this one in the drawer. -->
+                <a
+                    t-att-href="'/shop/category/%s' % category.id"
+                    class="nav-link o_mm_all"
+                >Voir tous les produits</a>
             </nav>
         </xpath>
     </template>
