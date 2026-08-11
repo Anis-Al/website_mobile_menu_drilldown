@@ -198,18 +198,12 @@
     // (o_cc/o_cc1 on <section>, theme classes on the wrappers), which left the
     // mega panel a different color from the rest of the offcanvas.
     //
-    // The panel is repainted, not made transparent: it overlays the website
-    // menu list, so a see-through panel renders both lists on top of each
-    // other. Only the wrappers inside it drop their color. Not `*`: the leaf
-    // rows below are cards and keep --mm-card-bg.
+    // The panel is repainted with --mm-bg, not made transparent: it overlays
+    // the website menu list, so a see-through panel renders both lists on top
+    // of each other. Only the wrappers inside it drop their color. Not `*`:
+    // the leaf rows below are cards and keep --mm-card-bg.
     .o_mega_menu {
         background-color: var(--mm-bg) !important;
-    }
-
-    // Desktop-only column footer: here the category title is the back bar and
-    // already links to the same page.
-    .o_mm_all {
-        display: none !important;
     }
 
     .o_mega_menu > section,
@@ -219,6 +213,12 @@
     .o_mega_menu [class*="col-"],
     .o_mega_menu .o_mm_sub {
         background: transparent !important;
+    }
+
+    // Desktop-only column footer: here the category title is the back bar and
+    // already links to the same page.
+    .o_mm_all {
+        display: none !important;
     }
 
     // ---- Drilldown inside the mega menu snippet content -------------------
@@ -369,7 +369,7 @@
         --mmd-title: #1f3557;       // parent category label + hover
         --mmd-item: #3f4145;        // sub category label
         --mmd-line: #bd945d;        // rule under a parent category
-        --mmd-bg: #fff;             // menu panel
+        --mmd-bg: #fafafa;          // menu panel
         --mmd-hover-bg: #f2f3f5;
 
         // Beats the o_cc/o_cc1 color combination the snippet carries.
@@ -427,11 +427,4 @@
             }
         }
     }
-}
-
-// Site background. ponytail: one line here, but it belongs in Website >
-// Configuration > Settings > Theme, which sets it globally instead of having
-// a menu module reach outside itself. Delete when the theme carries it.
-body {
-    background-color: #fafafa;
 }

@@ -42,8 +42,10 @@ chevron from CSS, not from the view, so tweaking the icon needs no re-apply.
 The link is hidden inside the offcanvas — on mobile the category title is the
 back bar and already points to the same page.
 
-The last rule in the file is a site background (`body`), which really belongs
-in Website → Configuration → Settings → Theme.
+Nothing in this module paints outside the menu. A bare `body` rule used to set
+the site background here; it turned every frontend page (`/shop` included)
+off-white. Site background belongs in Website → Configuration → Settings →
+Theme.
 
 ## Gotchas
 
@@ -70,7 +72,9 @@ in Website → Configuration → Settings → Theme.
 - **The mega panel must stay opaque.** In the drawer it overlays the website
   menu list. Making it `transparent` to unify the drawer color rendered both
   lists on top of each other. `.o_mega_menu` is repainted with `--mm-bg`; only
-  the wrappers *inside* it drop their color.
+  the wrappers *inside* it drop their color. (If unifying the drawer looks
+  like it recolored the whole site, check for a stray global rule first — a
+  `body` background here once did exactly that.)
 
 ## After changing views/s_mega_menu_multi_menus.xml
 
