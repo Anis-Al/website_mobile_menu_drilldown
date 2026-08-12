@@ -215,8 +215,8 @@
         background: transparent !important;
     }
 
-    // Desktop-only column footer: here the category title is the back bar and
-    // already links to the same page.
+    // Desktop-only column footer: here the level title stays on screen as a
+    // sticky heading and already links to the same page.
     .o_mm_all {
         display: none !important;
     }
@@ -279,16 +279,12 @@
     // positioned layers, where every panel is the next one's containing block
     // and one broken link in the chain leaves a level inline and half-height.
     .o_mega_menu:has(.o_mm_open) {
-        margin-top: 0 !important;
-        height: 100dvh;
-
-        ~ .o_mega_nav {
-            display: none;
-        }
-
-        // Room above the back bar for the offcanvas close button.
+        // .o_mega_nav stays: it is the back control at every level, drilled or
+        // not (mega_menu_drilldown.js pops one level per click). So the panel
+        // keeps Odoo's own offset under it and the level titles are plain
+        // headings, not back bars.
         > section {
-            padding-block: var(--mm-top) 0 !important;
+            padding-block: 0 !important;
         }
 
         .container,
@@ -320,10 +316,11 @@
             border-bottom: 0;
 
             // Sticky, not absolute: .o_mega_menu is the scroll container, and
-            // an absolute child of it scrolls away with the list.
+            // an absolute child of it scrolls away with the list. top: 0,
+            // because that container already starts under .o_mega_nav.
             > :is(h1, h2, h3, h4, h5, h6) {
                 position: sticky;
-                top: var(--mm-top);
+                top: 0;
                 z-index: 2;
                 height: var(--mm-bar-h);
                 border-bottom: 2px solid var(--mm-fg);
@@ -334,10 +331,9 @@
                     height: 100%;
                     padding-block: 0 !important;
 
+                    // Where you are, not a control: .o_mega_nav goes back.
                     &::after {
-                        content: "\e83a" !important; // oi-chevron-left
-                        order: -1;
-                        margin-right: .75rem;
+                        content: none !important;
                     }
                 }
             }
@@ -346,12 +342,6 @@
                 display: block;
                 padding-block: 1rem 1.5rem;
             }
-        }
-
-        // Deepest level (its rows are leaves, no block to drill into): a back
-        // control is already on screen, so the title drops its arrow.
-        .o_mm_open:not(:has(.o_mm_sub)) > :is(h1, h2, h3, h4, h5, h6) > .nav-link::after {
-            content: none !important;
         }
     }
 }

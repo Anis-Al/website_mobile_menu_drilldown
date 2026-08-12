@@ -12,7 +12,7 @@ Despite the name, the SCSS also carries the desktop mega menu skin (see
 | File | Role |
 |---|---|
 | `static/src/scss/mobile_menu.scss` | All layout. The drilldown is scoped to `#top_menu_collapse_mobile`, so desktop/sidebar/hamburger headers are untouched; the desktop skin sits in a `media-breakpoint-up(lg)` block at the end. |
-| `static/src/js/mega_menu_drilldown.js` | ~20 lines. One delegated click that flags the open block with `o_mm_open`. Nothing else. |
+| `static/src/js/mega_menu_drilldown.js` | One delegated click. Flags the open block with `o_mm_open`; on Odoo's `.o_mega_nav` back arrow, pops the deepest one instead of letting the mega menu close. Nothing else. |
 | `views/s_mega_menu_multi_menus.xml` | Inherits `website_sale.s_mega_menu_multi_menus`: renders a third category level as `.o_mm_sub`, and appends a `.o_mm_all` "Voir tous les produits" link per column. |
 
 ## Levels
@@ -22,7 +22,8 @@ Despite the name, the SCSS also carries the desktop mega menu skin (see
    back bar and its `.accordion-collapse` as the panel, so "back" is just
    collapsing it. No JS.
 2. **Mega menu** — Odoo already drills it to a full-screen panel
-   (`.o_mega_menu_is_offcanvas`, `.o_mega_nav` back bar). Untouched.
+   (`.o_mega_menu_is_offcanvas`, `.o_mega_nav` back bar). Layout untouched;
+   the back arrow is reused as the back control for level 3 too (see JS).
 3. **Inside the mega menu snippet** — `mega_menu_content` is an HTML *field*,
    not a template: no toggle markup, nothing to inherit. Hence the JS.
 
